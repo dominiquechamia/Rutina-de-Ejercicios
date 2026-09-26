@@ -1,16 +1,12 @@
 {
-  "name": "Sparkle Routine",
-  "short_name": "Sparkle",
+  "name": "Rutina de ejercicios",
+  "short_name": "Rutina de ejercicios",
   "description": "Organizador semanal de rutinas con estilo mágico",
-
   "start_url": "./",
   "scope": "./",
-
   "display": "standalone",
-
   "background_color": "#f8f5ff",
   "theme_color": "#7454c7",
-
   "icons": [
     {
       "src": "./icons/icon-192.png",

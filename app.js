@@ -58,64 +58,209 @@ const days = [
 ];
 
 const today = new Date();
-const todayName = days[today.getDay()];
+
+const todayName =
+    days[today.getDay()];
 
 
 // ==========================================
-// 3. RECUPERAR PROGRESO GUARDADO
+// 3. CALCULAR SEMANA ACTUAL
+// La semana comienza el lunes.
+// Guardamos la fecha del lunes:
+// ejemplo: 2026-09-21
+// ==========================================
+
+function getMonday(date) {
+
+    const result =
+        new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate()
+        );
+
+    const day =
+        result.getDay();
+
+    const difference =
+        day === 0
+            ? -6
+            : 1 - day;
+
+    result.setDate(
+        result.getDate() + difference
+    );
+
+    result.setHours(0, 0, 0, 0);
+
+    return result;
+}
+
+
+function formatDateKey(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+const currentMonday =
+    getMonday(today);
+
+const currentWeekKey =
+    formatDateKey(currentMonday);
+
+
+// ==========================================
+// 4. DATOS GUARDADOS
 // ==========================================
 
 let completedWorkouts = [];
 
+let completedWeeks = [];
+
+
 try {
+
     completedWorkouts =
         JSON.parse(
-            localStorage.getItem("completedWorkouts")
+            localStorage.getItem(
+                "completedWorkouts"
+            )
         ) || [];
+
+
+    completedWeeks =
+        JSON.parse(
+            localStorage.getItem(
+                "completedWeeks"
+            )
+        ) || [];
+
 }
 catch (error) {
+
     completedWorkouts = [];
+
+    completedWeeks = [];
 }
 
 
 // ==========================================
-// 4. ELEMENTOS HTML
+// 5. REINICIO AUTOMÁTICO SEMANAL
+// ==========================================
+
+const storedWeekKey =
+    localStorage.getItem(
+        "activeWeekKey"
+    );
+
+
+if (!storedWeekKey) {
+
+    // Primera vez que usamos
+    // el sistema semanal.
+
+    localStorage.setItem(
+        "activeWeekKey",
+        currentWeekKey
+    );
+
+}
+else if (
+    storedWeekKey !==
+    currentWeekKey
+) {
+
+    // Entramos a una nueva semana.
+    // Se limpian solamente los checks.
+
+    completedWorkouts = [];
+
+
+    localStorage.setItem(
+        "completedWorkouts",
+        JSON.stringify(
+            completedWorkouts
+        )
+    );
+
+
+    localStorage.setItem(
+        "activeWeekKey",
+        currentWeekKey
+    );
+
+}
+
+
+// ==========================================
+// 6. ELEMENTOS DEL HTML
 // ==========================================
 
 const container =
-    document.getElementById("workout-container");
+    document.getElementById(
+        "workout-container"
+    );
 
 const progressNumber =
-    document.getElementById("progress-number");
+    document.getElementById(
+        "progress-number"
+    );
 
 const progressBar =
-    document.getElementById("progress");
+    document.getElementById(
+        "progress"
+    );
 
 const progressMessage =
-    document.getElementById("progress-message");
+    document.getElementById(
+        "progress-message"
+    );
 
 const stars =
-    document.getElementById("stars");
+    document.getElementById(
+        "stars"
+    );
 
 const streak =
-    document.getElementById("streak");
+    document.getElementById(
+        "streak"
+    );
 
 const resetButton =
-    document.getElementById("reset-week");
+    document.getElementById(
+        "reset-week"
+    );
 
 
 // ==========================================
-// 5. CREAR TARJETAS
+// 7. CREAR TARJETAS
 // ==========================================
 
 function renderWorkouts() {
 
     if (!container) {
+
         console.error(
-            "No existe #workout-container en index.html"
+            "No existe #workout-container"
         );
+
         return;
     }
+
 
     container.innerHTML = "";
 
@@ -123,26 +268,40 @@ function renderWorkouts() {
     workouts.forEach(workout => {
 
         const completed =
-            completedWorkouts.includes(workout.id);
+            completedWorkouts.includes(
+                workout.id
+            );
+
 
         const isToday =
-            workout.day === todayName;
+            workout.day ===
+            todayName;
 
 
         const card =
-            document.createElement("article");
+            document.createElement(
+                "article"
+            );
 
 
-        card.classList.add("workout-card");
+        card.classList.add(
+            "workout-card"
+        );
 
 
         if (completed) {
-            card.classList.add("completed");
+
+            card.classList.add(
+                "completed"
+            );
         }
 
 
         if (isToday) {
-            card.classList.add("today");
+
+            card.classList.add(
+                "today"
+            );
         }
 
 
@@ -155,7 +314,7 @@ function renderWorkouts() {
                     ${
                         isToday
                             ? '<span class="today-label">✦ HOY</span>'
-                            : ''
+                            : ""
                     }
 
                     <span class="day">
@@ -166,7 +325,13 @@ function renderWorkouts() {
 
 
                 <span class="card-star">
-                    ${completed ? "⭐" : "✦"}
+
+                    ${
+                        completed
+                            ? "⭐"
+                            : "✦"
+                    }
+
                 </span>
 
             </div>
@@ -198,18 +363,23 @@ function renderWorkouts() {
                     class="complete-button"
                     onclick="toggleWorkout(${workout.id})"
                 >
+
                     ${
                         completed
                             ? "✓ Completado"
                             : "Marcar completado"
                     }
+
                 </button>
 
             </div>
+
         `;
 
 
-        container.appendChild(card);
+        container.appendChild(
+            card
+        );
     });
 
 
@@ -218,19 +388,23 @@ function renderWorkouts() {
 
 
 // ==========================================
-// 6. COMPLETAR / DESMARCAR
+// 8. COMPLETAR / DESMARCAR
 // ==========================================
 
 function toggleWorkout(id) {
 
-    if (completedWorkouts.includes(id)) {
+    if (
+        completedWorkouts.includes(id)
+    ) {
 
         completedWorkouts =
             completedWorkouts.filter(
-                workoutId => workoutId !== id
+                workoutId =>
+                    workoutId !== id
             );
 
-    } else {
+    }
+    else {
 
         completedWorkouts.push(id);
     }
@@ -238,20 +412,159 @@ function toggleWorkout(id) {
 
     localStorage.setItem(
         "completedWorkouts",
-        JSON.stringify(completedWorkouts)
+        JSON.stringify(
+            completedWorkouts
+        )
     );
 
+
+    updateCompletedWeeks();
 
     renderWorkouts();
 }
 
 
-// Necesario para onclick=""
-window.toggleWorkout = toggleWorkout;
+window.toggleWorkout =
+    toggleWorkout;
 
 
 // ==========================================
-// 7. ACTUALIZAR PROGRESO
+// 9. REGISTRAR SEMANAS COMPLETADAS
+// ==========================================
+
+function updateCompletedWeeks() {
+
+    const weekIsComplete =
+        completedWorkouts.length ===
+        workouts.length;
+
+
+    const alreadyRegistered =
+        completedWeeks.includes(
+            currentWeekKey
+        );
+
+
+    // Si completaste las 4 rutinas:
+    if (
+        weekIsComplete &&
+        !alreadyRegistered
+    ) {
+
+        completedWeeks.push(
+            currentWeekKey
+        );
+    }
+
+
+    // Si habías completado la semana
+    // pero desmarcas un entrenamiento,
+    // quitamos esta semana del historial.
+    if (
+        !weekIsComplete &&
+        alreadyRegistered
+    ) {
+
+        completedWeeks =
+            completedWeeks.filter(
+                week =>
+                    week !==
+                    currentWeekKey
+            );
+    }
+
+
+    // Evitar duplicados.
+    completedWeeks =
+        [...new Set(completedWeeks)];
+
+
+    localStorage.setItem(
+        "completedWeeks",
+        JSON.stringify(
+            completedWeeks
+        )
+    );
+}
+
+
+// ==========================================
+// 10. CALCULAR RACHA
+// ==========================================
+
+function calculateStreak() {
+
+    if (
+        completedWeeks.length === 0
+    ) {
+
+        return 0;
+    }
+
+
+    let streakCount = 0;
+
+
+    /*
+       Si esta semana ya está completa,
+       comenzamos a contar desde ella.
+
+       Si todavía no está completa,
+       empezamos desde la semana pasada.
+    */
+
+    let weekToCheck =
+        new Date(currentMonday);
+
+
+    if (
+        !completedWeeks.includes(
+            currentWeekKey
+        )
+    ) {
+
+        weekToCheck.setDate(
+            weekToCheck.getDate() - 7
+        );
+    }
+
+
+    while (true) {
+
+        const weekKey =
+            formatDateKey(
+                weekToCheck
+            );
+
+
+        if (
+            completedWeeks.includes(
+                weekKey
+            )
+        ) {
+
+            streakCount++;
+
+
+            weekToCheck.setDate(
+                weekToCheck.getDate() - 7
+            );
+
+        }
+        else {
+
+            break;
+        }
+
+    }
+
+
+    return streakCount;
+}
+
+
+// ==========================================
+// 11. ACTUALIZAR PROGRESO
 // ==========================================
 
 function updateProgress() {
@@ -267,33 +580,35 @@ function updateProgress() {
 
 
     if (progressNumber) {
+
         progressNumber.textContent =
             `${completed} / ${total}`;
     }
 
 
     if (progressBar) {
+
         progressBar.style.width =
             `${percentage}%`;
     }
 
 
     if (stars) {
-        stars.textContent = completed;
+
+        stars.textContent =
+            completed;
     }
 
 
-    /*
-       La racha real todavía no está programada.
-       Por ahora queda en 0.
-    */
-
     if (streak) {
-        streak.textContent = "0";
+
+        streak.textContent =
+            calculateStreak();
     }
 
 
     if (!progressMessage) {
+
         return;
     }
 
@@ -302,41 +617,36 @@ function updateProgress() {
 
         progressMessage.textContent =
             "Tu aventura comienza aquí ✨";
-
     }
 
     else if (completed === 1) {
 
         progressMessage.textContent =
             "Una estrella conseguida ✦";
-
     }
 
     else if (completed === 2) {
 
         progressMessage.textContent =
             "¡Mitad de la semana completada! 💜";
-
     }
 
     else if (completed === 3) {
 
         progressMessage.textContent =
             "Te queda solo una misión ✨";
-
     }
 
     else {
 
         progressMessage.textContent =
             "¡Semana encantada completada! ⭐";
-
     }
 }
 
 
 // ==========================================
-// 8. REINICIAR SEMANA
+// 12. REINICIAR MANUALMENTE
 // ==========================================
 
 if (resetButton) {
@@ -347,11 +657,12 @@ if (resetButton) {
 
             const confirmation =
                 confirm(
-                    "¿Quieres comenzar una nueva semana?"
+                    "¿Quieres reiniciar los entrenamientos de esta semana?"
                 );
 
 
             if (!confirmation) {
+
                 return;
             }
 
@@ -359,8 +670,32 @@ if (resetButton) {
             completedWorkouts = [];
 
 
-            localStorage.removeItem(
-                "completedWorkouts"
+            localStorage.setItem(
+                "completedWorkouts",
+                JSON.stringify(
+                    completedWorkouts
+                )
+            );
+
+
+            /*
+               Si esta semana estaba registrada
+               como completa, la quitamos.
+            */
+
+            completedWeeks =
+                completedWeeks.filter(
+                    week =>
+                        week !==
+                        currentWeekKey
+                );
+
+
+            localStorage.setItem(
+                "completedWeeks",
+                JSON.stringify(
+                    completedWeeks
+                )
             );
 
 
@@ -371,19 +706,25 @@ if (resetButton) {
 
 
 // ==========================================
-// 9. SONIDO MÁGICO
+// 13. SONIDO MÁGICO
 // ==========================================
 
 const sparkleSound =
-    new Audio("./sounds/sparkle.mp3");
+    new Audio(
+        "./sounds/sparkle.mp3"
+    );
 
-sparkleSound.preload = "auto";
 
-sparkleSound.volume = 0.25;
+sparkleSound.preload =
+    "auto";
+
+
+sparkleSound.volume =
+    0.25;
 
 
 // ==========================================
-// 10. BRILLITOS EN TWILIGHT
+// 14. BRILLITOS EN TWILIGHT
 // ==========================================
 
 const sparkleImages =
@@ -403,18 +744,27 @@ sparkleImages.forEach(image => {
             const sound =
                 sparkleSound.cloneNode();
 
-            sound.volume = 0.25;
 
-            sound.play().catch(() => {
-                console.log(
-                    "No se pudo reproducir sparkle.mp3"
-                );
-            });
+            sound.volume =
+                0.25;
+
+
+            sound.play().catch(
+                () => {
+
+                    console.log(
+                        "No se pudo reproducir sparkle.mp3"
+                    );
+
+                }
+            );
 
 
             // BRILLITOS
 
-            createSparkleBurst(event);
+            createSparkleBurst(
+                event
+            );
 
 
             // MINI REBOTE
@@ -423,7 +773,9 @@ sparkleImages.forEach(image => {
                 "sparkle-pop"
             );
 
+
             void image.offsetWidth;
+
 
             image.classList.add(
                 "sparkle-pop"
@@ -432,12 +784,15 @@ sparkleImages.forEach(image => {
 
             setTimeout(
                 () => {
+
                     image.classList.remove(
                         "sparkle-pop"
                     );
+
                 },
                 400
             );
+
         }
     );
 
@@ -445,15 +800,19 @@ sparkleImages.forEach(image => {
 
 
 // ==========================================
-// 11. CREAR BRILLITOS
+// 15. CREAR BRILLITOS
 // ==========================================
 
 function createSparkleBurst(event) {
 
-    const sparkleCount = 18;
+    const sparkleCount =
+        18;
 
-    const x = event.clientX;
-    const y = event.clientY;
+    const x =
+        event.clientX;
+
+    const y =
+        event.clientY;
 
 
     const symbols = [
@@ -482,7 +841,9 @@ function createSparkleBurst(event) {
     ) {
 
         const sparkle =
-            document.createElement("span");
+            document.createElement(
+                "span"
+            );
 
 
         sparkle.className =
@@ -500,6 +861,7 @@ function createSparkleBurst(event) {
 
         sparkle.style.left =
             `${x}px`;
+
 
         sparkle.style.top =
             `${y}px`;
@@ -542,7 +904,9 @@ function createSparkleBurst(event) {
         sparkle.addEventListener(
             "animationend",
             () => {
+
                 sparkle.remove();
+
             }
         );
     }
@@ -550,37 +914,52 @@ function createSparkleBurst(event) {
 
 
 // ==========================================
-// 12. SERVICE WORKER
+// 16. SERVICE WORKER
 // ==========================================
 
-if ("serviceWorker" in navigator) {
+if (
+    "serviceWorker" in navigator
+) {
 
     window.addEventListener(
         "load",
         () => {
 
-            navigator.serviceWorker
-                .register("./service-worker.js")
+            navigator
+                .serviceWorker
+                .register(
+                    "./service-worker.js"
+                )
 
                 .then(() => {
+
                     console.log(
                         "✨ Sparkle Routine lista"
                     );
+
                 })
 
                 .catch(error => {
+
                     console.error(
                         "Error Service Worker:",
                         error
                     );
+
                 });
+
         }
     );
 }
 
 
 // ==========================================
-// 13. INICIAR
+// 17. INICIAR
 // ==========================================
+
+// Por si ya tenías 4/4 antes
+// de instalar esta actualización.
+
+updateCompletedWeeks();
 
 renderWorkouts();

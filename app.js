@@ -13,14 +13,9 @@ const workouts = [
 
     {
         id: 1,
-
         day: "Martes",
-
-        title:
-            "Brazos + espalda + abdomen",
-
-        duration:
-            "30 min",
+        title: "Brazos + espalda + abdomen",
+        duration: "30 min",
 
         video:
             "PEGA_AQUI_EL_LINK_DEL_MARTES"
@@ -29,15 +24,9 @@ const workouts = [
 
     {
         id: 2,
-
-        day:
-            "Jueves",
-
-        title:
-            "Brazos",
-
-        duration:
-            "12 min",
+        day: "Jueves",
+        title: "Brazos",
+        duration: "12 min",
 
         video:
             "PEGA_AQUI_EL_LINK_DEL_JUEVES"
@@ -46,15 +35,9 @@ const workouts = [
 
     {
         id: 3,
-
-        day:
-            "Viernes",
-
-        title:
-            "Glúteos",
-
-        duration:
-            "29 min",
+        day: "Viernes",
+        title: "Glúteos",
+        duration: "29 min",
 
         video:
             "PEGA_AQUI_EL_LINK_DEL_VIERNES"
@@ -63,15 +46,9 @@ const workouts = [
 
     {
         id: 4,
-
-        day:
-            "Domingo",
-
-        title:
-            "Full Body + abdomen",
-
-        duration:
-            "21 min",
+        day: "Domingo",
+        title: "Full Body + abdomen",
+        duration: "21 min",
 
         video:
             "PEGA_AQUI_EL_LINK_DEL_DOMINGO"
@@ -82,23 +59,17 @@ const workouts = [
 
 
 // ==========================================
-// 2. DÍA ACTUAL
+// 2. DETECTAR DÍA ACTUAL
 // ==========================================
 
 const days = [
 
     "Domingo",
-
     "Lunes",
-
     "Martes",
-
     "Miércoles",
-
     "Jueves",
-
     "Viernes",
-
     "Sábado"
 
 ];
@@ -114,7 +85,7 @@ const todayName =
 
 
 // ==========================================
-// 3. COMPLETADOS
+// 3. ENTRENAMIENTOS COMPLETADOS
 // ==========================================
 
 let completedWorkouts =
@@ -130,7 +101,7 @@ let completedWorkouts =
 
 
 // ==========================================
-// 4. ELEMENTOS HTML
+// 4. ELEMENTOS DEL HTML
 // ==========================================
 
 const container =
@@ -322,7 +293,7 @@ function renderWorkouts() {
 
 
 // ==========================================
-// 6. COMPLETAR ENTRENAMIENTO
+// 6. COMPLETAR / DESMARCAR
 // ==========================================
 
 function toggleWorkout(id) {
@@ -331,6 +302,7 @@ function toggleWorkout(id) {
     if (
         completedWorkouts.includes(id)
     ) {
+
 
         completedWorkouts =
 
@@ -345,6 +317,7 @@ function toggleWorkout(id) {
 
 
     else {
+
 
         completedWorkouts.push(
             id
@@ -373,7 +346,7 @@ function toggleWorkout(id) {
 
 
 // ==========================================
-// 7. PROGRESO
+// 7. PROGRESO SEMANAL
 // ==========================================
 
 function updateProgress() {
@@ -508,7 +481,6 @@ if (resetButton) {
                 localStorage.removeItem(
 
                     "completedWorkouts"
-
                 );
 
 
@@ -525,8 +497,36 @@ if (resetButton) {
 
 
 // ==========================================
-// ✦ 9. BRILLITOS EN TWILIGHT ✦
+// ✦ 9. BRILLITOS + SONIDO ✦
 // ==========================================
+
+
+// Audio mágico principal
+
+const sparkleSound =
+
+    new Audio(
+        "./sounds/sparkle.mp3"
+    );
+
+
+// Cargarlo anticipadamente
+
+sparkleSound.preload =
+    "auto";
+
+
+// Volumen:
+// 0 = nada
+// 1 = máximo
+
+sparkleSound.volume =
+    0.30;
+
+
+
+// Todas las imágenes que tengan
+// la clase sparkle-image
 
 const sparkleImages =
 
@@ -546,17 +546,50 @@ sparkleImages.forEach(image => {
         event => {
 
 
+            // ==========================
+            // SONIDO
+            // ==========================
+
+            const sound =
+
+                sparkleSound.cloneNode();
+
+
+            sound.volume =
+                0.30;
+
+
+            sound.play().catch(() => {
+
+                console.log(
+                    "El navegador bloqueó el sonido."
+                );
+
+            });
+
+
+
+            // ==========================
+            // BRILLITOS
+            // ==========================
+
             createSparkleBurst(
                 event
             );
 
 
-            /* mini pop de la imagen */
+
+            // ==========================
+            // MINI REBOTE
+            // ==========================
 
             image.classList.remove(
                 "sparkle-pop"
             );
 
+
+            // Forzar reinicio
+            // de la animación
 
             void image.offsetWidth;
 
@@ -567,6 +600,7 @@ sparkleImages.forEach(image => {
 
 
             setTimeout(
+
                 () => {
 
                     image.classList.remove(
@@ -576,6 +610,7 @@ sparkleImages.forEach(image => {
                 },
 
                 400
+
             );
 
         }
@@ -585,6 +620,10 @@ sparkleImages.forEach(image => {
 });
 
 
+
+// ==========================================
+// 10. CREAR BRILLITOS
+// ==========================================
 
 function createSparkleBurst(event) {
 
@@ -605,13 +644,9 @@ function createSparkleBurst(event) {
     const symbols = [
 
         "✦",
-
         "✨",
-
         "★",
-
         "⋆",
-
         "💜"
 
     ];
@@ -621,15 +656,10 @@ function createSparkleBurst(event) {
     const colors = [
 
         "#ffffff",
-
         "#ffd8f4",
-
         "#ef8ddd",
-
         "#d1a4ff",
-
         "#a77cff",
-
         "#7b58d1"
 
     ];
@@ -652,7 +682,6 @@ function createSparkleBurst(event) {
 
 
         sparkle.className =
-
             "sparkle-burst";
 
 
@@ -673,20 +702,21 @@ function createSparkleBurst(event) {
 
 
         sparkle.style.left =
-
             `${x}px`;
 
 
 
         sparkle.style.top =
-
             `${y}px`;
 
 
 
         sparkle.style.fontSize =
 
-            `${10 + Math.random() * 18}px`;
+            `${
+                10 +
+                Math.random() * 18
+            }px`;
 
 
 
@@ -763,7 +793,7 @@ function createSparkleBurst(event) {
 
 
 // ==========================================
-// 10. SERVICE WORKER
+// 11. SERVICE WORKER
 // ==========================================
 
 if (
@@ -792,10 +822,11 @@ if (
 
                 })
 
+
                 .catch(error => {
 
                     console.log(
-                        "Error Service Worker:",
+                        "Error en Service Worker:",
                         error
                     );
 
@@ -810,6 +841,10 @@ if (
 
 
 // ==========================================
+// 12. INICIAR APLICACIÓN
+// ==========================================
+
+renderWorkouts();===
 // 11. INICIAR
 // ==========================================
 

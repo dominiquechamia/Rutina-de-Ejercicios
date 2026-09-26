@@ -18,7 +18,7 @@ const workouts = [
         duration: "30 min",
 
         video:
-            "PEGA_AQUI_EL_LINK_DEL_MARTES"
+            "https://youtu.be/FdCP27MtuNU"
     },
 
 
@@ -29,7 +29,7 @@ const workouts = [
         duration: "12 min",
 
         video:
-            "PEGA_AQUI_EL_LINK_DEL_JUEVES"
+            "https://youtu.be/5dgwIC71Dnc"
     },
 
 
@@ -40,7 +40,7 @@ const workouts = [
         duration: "29 min",
 
         video:
-            "PEGA_AQUI_EL_LINK_DEL_VIERNES"
+            "https://youtu.be/kl5AhFQtfvg"
     },
 
 
@@ -51,7 +51,7 @@ const workouts = [
         duration: "21 min",
 
         video:
-            "PEGA_AQUI_EL_LINK_DEL_DOMINGO"
+            "https://youtu.be/s-lfJuUIxzY"
     }
 
 ];

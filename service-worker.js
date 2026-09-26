@@ -4,14 +4,18 @@
 // ==========================================
 
 
-// Cambia el número de versión cuando hagas
-// cambios importantes en la app.
-const CACHE_NAME = "sparkle-routine-v6";
+// Nueva versión porque
+// agregamos sonido.
+
+const CACHE_NAME =
+    "sparkle-routine-v7";
 
 
-// Archivos principales que queremos guardar
-// para que la app pueda seguir funcionando
-// aunque no haya internet.
+
+// ==========================================
+// ARCHIVOS DE LA APP
+// ==========================================
+
 const FILES_TO_CACHE = [
 
     "./",
@@ -24,6 +28,9 @@ const FILES_TO_CACHE = [
 
     "./manifest.json",
 
+
+    // IMÁGENES
+
     "./images/gif.gif",
 
     "./images/png.gif",
@@ -32,20 +39,32 @@ const FILES_TO_CACHE = [
 
     "./images/ts.jpg",
 
+
+    // ICONOS
+
     "./icons/icon-192.png",
 
-    "./icons/icon-512.png"
+    "./icons/icon-512.png",
+
+
+    // SONIDO
+
+    "./sounds/sparkle.mp3"
 
 ];
 
 
+
 // ==========================================
-// INSTALACIÓN
+// INSTALAR
 // ==========================================
 
 self.addEventListener(
+
     "install",
+
     event => {
+
 
         console.log(
             "✨ Instalando Sparkle Routine..."
@@ -59,9 +78,11 @@ self.addEventListener(
 
                 .then(cache => {
 
+
                     console.log(
                         "✨ Guardando archivos..."
                     );
+
 
                     return cache.addAll(
                         FILES_TO_CACHE
@@ -72,21 +93,24 @@ self.addEventListener(
         );
 
 
-        // Hace que la nueva versión
-        // pueda activarse inmediatamente.
         self.skipWaiting();
 
     }
+
 );
 
 
+
 // ==========================================
-// ACTIVACIÓN
+// ACTIVAR
 // ==========================================
 
 self.addEventListener(
+
     "activate",
+
     event => {
+
 
         console.log(
             "💜 Activando Sparkle Routine..."
@@ -100,21 +124,32 @@ self.addEventListener(
 
                 .then(cacheNames => {
 
+
                     return Promise.all(
 
+
                         cacheNames.map(
+
                             cacheName => {
 
-                                // Borra versiones antiguas.
+
                                 if (
-                                    cacheName !==
+
+                                    cacheName
+                                    !==
                                     CACHE_NAME
+
                                 ) {
 
+
                                     console.log(
+
                                         "🗑 Eliminando caché antigua:",
+
                                         cacheName
+
                                     );
+
 
                                     return caches.delete(
                                         cacheName
@@ -123,6 +158,7 @@ self.addEventListener(
                                 }
 
                             }
+
                         )
 
                     );
@@ -132,7 +168,117 @@ self.addEventListener(
         );
 
 
-        // Hace que esta versión tome
+        self.clients.claim();
+
+    }
+
+);
+
+
+
+// ==========================================
+// FETCH
+// ==========================================
+
+self.addEventListener(
+
+    "fetch",
+
+    event => {
+
+
+        // Solo GET
+
+        if (
+
+            event.request.method
+            !==
+            "GET"
+
+        ) {
+
+            return;
+
+        }
+
+
+
+        event.respondWith(
+
+
+            // Primero intentamos obtener
+            // la versión nueva.
+
+            fetch(
+                event.request
+            )
+
+
+                .then(response => {
+
+
+                    if (
+
+                        !response ||
+
+                        response.status
+                        !==
+                        200
+
+                    ) {
+
+                        return response;
+
+                    }
+
+
+
+                    const responseCopy =
+
+                        response.clone();
+
+
+
+                    caches
+                        .open(CACHE_NAME)
+
+                        .then(cache => {
+
+
+                            cache.put(
+
+                                event.request,
+
+                                responseCopy
+
+                            );
+
+                        });
+
+
+
+                    return response;
+
+                })
+
+
+                // Si no hay internet,
+                // buscamos en caché.
+
+                .catch(() => {
+
+
+                    return caches.match(
+                        event.request
+                    );
+
+                })
+
+        );
+
+    }
+
+);
         // el control de la página inmediatamente.
         self.clients.claim();
 

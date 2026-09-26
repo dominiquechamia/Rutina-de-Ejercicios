@@ -1,6 +1,6 @@
 {
-  "name": "Rutina de ejercicios",
-  "short_name": "Rutina de ejercicios",
+  "name": "Rutina de Ejercicios",
+  "short_name": "Rutina de Ejercicios",
   "description": "Organizador semanal de rutinas con estilo mágico",
   "start_url": "./",
   "scope": "./",

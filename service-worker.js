@@ -3,26 +3,46 @@
 // service-worker.js
 // ==========================================
 
+
 const CACHE_NAME =
-    "sparkle-routine-v9";
+    "sparkle-routine-v10";
 
 
 const FILES_TO_CACHE = [
+
     "./",
+
     "./index.html",
+
     "./style.css",
+
     "./app.js",
+
     "./manifest.json",
 
+
+    // Imágenes
+
     "./images/gif.gif",
+
     "./images/png.gif",
+
     "./images/meme.jpg",
+
     "./images/ts.jpg",
 
+
+    // Iconos
+
     "./icons/icon-192.png",
+
     "./icons/icon-512.png",
 
+
+    // Sonido
+
     "./sounds/sparkle.mp3"
+
 ];
 
 
@@ -42,8 +62,11 @@ self.addEventListener(
                 .then(async cache => {
 
                     /*
-                    Guardamos cada archivo por separado.
-                    Si uno falta, no rompe toda la app.
+                    Intentamos guardar todos
+                    los archivos.
+
+                    Si uno falta,
+                    no rompe toda la instalación.
                     */
 
                     await Promise.allSettled(
@@ -120,8 +143,10 @@ self.addEventListener(
     event => {
 
         if (
-            event.request.method !== "GET"
+            event.request.method !==
+            "GET"
         ) {
+
             return;
         }
 
@@ -129,12 +154,18 @@ self.addEventListener(
         event.respondWith(
 
             /*
-            NETWORK FIRST:
-            intenta cargar primero
-            la versión nueva.
+            NETWORK FIRST
+
+            Primero intenta obtener
+            el archivo más nuevo.
+
+            Si no tienes internet,
+            usa el caché.
             */
 
-            fetch(event.request)
+            fetch(
+                event.request
+            )
 
                 .then(response => {
 
@@ -142,6 +173,7 @@ self.addEventListener(
                         !response ||
                         response.status !== 200
                     ) {
+
                         return response;
                     }
 
@@ -164,6 +196,7 @@ self.addEventListener(
 
 
                     return response;
+
                 })
 
 

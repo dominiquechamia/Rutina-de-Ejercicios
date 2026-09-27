@@ -1,6 +1,6 @@
-# ✨ Sparkle Routine
+# ✨ Rutina de Ejercicios
 
-Sparkle Routine es una aplicación web para organizar y seguir una rutina semanal de ejercicios de forma simple, visual y motivadora.
+Es una aplicación web para organizar y seguir una rutina semanal de ejercicios de forma simple, visual y motivadora.
 
 La interfaz está inspirada en una estética mágica en tonos lilas y rosados, con elementos decorativos y animaciones.
 
